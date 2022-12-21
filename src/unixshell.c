@@ -37,6 +37,23 @@ int get_input(char *inp){
     return 0;
 }
 
+void handeler(char *inp){
+    char (*args)[MAXLIST/2 + 1];
+    char *token = strtok(inp," ");
+    int i = 0;
+    while (token != NULL)
+    {
+        strcpy(args[i], token);
+        // args[i] = token;
+        //  printf("\n%s token",token);
+        //  printf("\n%s arg %d", args[i],i);
+
+        token = strtok(NULL, " ");
+        // if(strlen(token)==0)
+            // i--;
+        i++;
+    }
+}
 
 int main(){
     char inpstr[MAXCOM];
@@ -46,6 +63,8 @@ int main(){
         printdir();
 
         get_input(inpstr);
+        handeler(inpstr);
+
         break;
     }
     return 0;
