@@ -10,6 +10,18 @@
 #define MAXCOM 1000 
 #define MAXLIST 100 
 
+int printdir(){
+    char cdir[1024];
+    if(getcwd(cdir, sizeof(cdir)) != NULL){
+        printf("\nDir", cdir);
+    }
+    else{
+       perror("getcwd() error");
+       return 1;
+    }
+    return 0;
+}
+
 int get_input(char *inp){
     char *buffer;
     buffer = readline("\n>>");
@@ -31,6 +43,8 @@ int main(){
 
     while (1)
     {
+        printdir();
+
         get_input(inpstr);
         break;
     }
