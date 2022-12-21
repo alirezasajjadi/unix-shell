@@ -10,6 +10,23 @@
 #define MAXCOM 1000 
 #define MAXLIST 100 
 
+#define clear() printf("\033[H\033[J")
+
+void init_shell()
+{
+	clear();
+	printf("\n\n\n\n******************"
+		"************************");
+	printf("\n\n\n\t****WELCOME TO MY UNIX SHELL****");
+	printf("\n\n\n\n*******************"
+		"***********************");
+	char* username = getenv("USER");
+	printf("\n\n\nUSER is: @%s", username);
+	printf("\n");
+	sleep(1);
+	clear();
+}
+
 int printdir(){
     char cdir[1024];
     if(getcwd(cdir, sizeof(cdir)) != NULL){
