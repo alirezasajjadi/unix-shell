@@ -25,6 +25,7 @@ void printFirstPart(char *fileName);
 FILE* readFile(char* fileName);
 void maxFrequent(char *fileName);
 void delSpace(char *fileName);
+void uncommented(char *fileName);
 
 void init_shell()
 {
@@ -195,6 +196,9 @@ int commandsHandler(char **args)
     case 4:
         delSpace(args[1]);
         return 1;
+    case 5:
+        uncommented(args[1]);
+        return 1;
     case 9:
         helpMenu();
         return 1;
@@ -278,7 +282,7 @@ void delSpace(char *fileName){
     char line[1000];
     FILE *file = readFile(fileName);
 
-    while (fgets(line,100,file)!=NULL)
+    while (fgets(line,1000,file)!=NULL)
     {
         char blank[1000];
         int j=0;
@@ -295,6 +299,27 @@ void delSpace(char *fileName){
     fclose(file);
 }
 
+void uncommented(char *fileName)
+{
+    char line[1000];
+    FILE *file = readFile(fileName);
+
+    while (fgets(line,1000,file)!=NULL)
+    {
+        char blank[1000];
+        int j=0, sizeOfLine = sizeof(line)/sizeof(line[0]);
+        for(int i=0, i<sizeOfLine;i++){
+            if(line[i]=='#')
+                break;
+            else{
+                blank[j]=line[i];
+                j++;
+            }
+        }
+        printf("\n%s",blank);
+    }
+    fclose(file);
+}
 void loop_run(char *inpstr, char **args)
 {
     while (1)
