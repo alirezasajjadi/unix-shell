@@ -321,14 +321,14 @@ void uncommented(char *fileName)
         int j = 0, sizeOfLine = sizeof(line) / sizeof(line[0]);
         for (int i = 0; i < sizeOfLine; i++)
         {
-            if (line[i] == '#')
-                break;
-            else
-            {
+            if (line[i] != '#'){
                 blank[j] = line[i];
                 j++;
             }
+            else
+                break;
         }
+        if(blank!=NULL)
         printf("\n%s", blank);
     }
     fclose(file);
