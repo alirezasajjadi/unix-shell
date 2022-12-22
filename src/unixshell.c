@@ -72,6 +72,24 @@ void handeler(char *inp){
     }
 }
 
+void helpMenu()
+{
+    puts("\n---->This is shell help<----"
+        "\n ->List of Commands supported:<-"
+        "\n>1. pwd"
+        "\n>2. cd"
+        "\n>3. ls"
+        "\n>4. pfp"
+        "\n>5. mxstr"
+        "\n>6. delspace"
+        "\n>7. shuncmt"
+        "\n>8. numLine"
+        "\n>9. firstTen"
+        "\n>10. pipe"
+        );
+    return;
+}
+
 int main(){
     char inpstr[MAXCOM];
 
