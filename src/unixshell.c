@@ -21,7 +21,8 @@ void execArgs(char **parsed);
 void helpMenu();
 int commandsHandler(char **inp);
 void loop_run(char *inpstr, char **args);
-// void readFile();
+void printFirstPart(char *fileName);
+FILE* readFile(char* fileName);
 
 void init_shell()
 {
@@ -114,7 +115,7 @@ void execArgs(char **parsed)
 {
 
     pid_t pid = fork();
-    printf("\n help commad");
+
     if (pid == -1)
     {
         printf("\nFailed forking child..");
@@ -177,14 +178,14 @@ int commandsHandler(char **args)
             break;
         }
     }
+
     switch (switchArg)
     {
     case 1:
         chdir(args[1]);
         return 1;
     case 2:
-        printf("\n type of = %s", args[1]);
-        // printFirstPart(inp[1]);
+        printFirstPart(args[1]);
         return 1;
     case 9:
         helpMenu();
@@ -196,23 +197,32 @@ int commandsHandler(char **args)
     return 0;
 }
 
-// void readFile()
-// {
-//     FILE *ptr;
-//     char ch;
-//     ptr = fopen("test.txt", "r");
-//     if (NULL == ptr)
-//     {
-//         printf("file can't be opened \n");
-//     }
-// }
+FILE* readFile(char *fileName)
+{
+    FILE *ptr;
+    char ch;
+    ptr = fopen(fileName, "r");
+    if (ptr == NULL)
+    {
+        printf("file can't be opened \n");
+    }
+    else
+        return ptr;
+}
 
-// void printFirstPart(char **inp){
+void printFirstPart(char *fileName)
+{
+    char line[100];
+    FILE *file = readFile(fileName);
 
-// }
+    while (fgets(line, 100, file) != NULL)
+    {
+        printf("\n %s",strtok(line," "));
+    }
+}
+
 void loop_run(char *inpstr, char **args)
 {
-
     while (1)
     {
         printdir();
@@ -220,9 +230,7 @@ void loop_run(char *inpstr, char **args)
             continue;
         // get_input(inpstr);
         parseSpace(inpstr, args);
-
         commandsHandler(args);
-        break;
     }
 }
 
