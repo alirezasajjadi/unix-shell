@@ -23,6 +23,8 @@ int commandsHandler(char **inp);
 void loop_run(char *inpstr, char **args);
 void printFirstPart(char *fileName);
 FILE* readFile(char* fileName);
+void maxFrequent(char *fileName);
+void delSpace(char *fileName);
 
 void init_shell()
 {
@@ -145,7 +147,7 @@ void helpMenu()
          "\n>2. cd"
          "\n>3. ls"
          "\n>4. pfp"
-         "\n>5. mxstr"
+         "\n>5. mxfreq"
          "\n>6. delspace"
          "\n>7. shuncmt"
          "\n>8. numLine"
@@ -163,7 +165,7 @@ int commandsHandler(char **args)
     char *username;
     cmdList[0] = "cd";
     cmdList[1] = "pfp";
-    cmdList[2] = "mxstr";
+    cmdList[2] = "mxfreq";
     cmdList[3] = "delspace";
     cmdList[4] = "shuncmt";
     cmdList[5] = "numLine";
@@ -187,6 +189,12 @@ int commandsHandler(char **args)
     case 2:
         printFirstPart(args[1]);
         return 1;
+    case 3:
+        maxFrequent(args[1]);
+        return 1;
+    case 4:
+        delSpace(args[1]);
+        return 1;
     case 9:
         helpMenu();
         return 1;
@@ -200,7 +208,6 @@ int commandsHandler(char **args)
 FILE* readFile(char *fileName)
 {
     FILE *ptr;
-    char ch;
     ptr = fopen(fileName, "r");
     if (ptr == NULL)
     {
@@ -212,12 +219,12 @@ FILE* readFile(char *fileName)
 
 void printFirstPart(char *fileName)
 {
-    char line[100];
+    char line[1000];
     FILE *file = readFile(fileName);
 
-    while (fgets(line, 100, file) != NULL)
+    while (fgets(line, 1000, file) != NULL)
     {
-        printf("\n %s",strtok(line," "));
+        printf("\n%s",strtok(line," "));
     }
 
     fclose(file);
@@ -226,7 +233,7 @@ void printFirstPart(char *fileName)
 void maxFrequent(char *fileName){
     int count,maxCount=0,i=0,j,k;
     char words[1000][1000], word[20]; // to remember
-    char line[100];
+    char line[1000];
     FILE *file = readFile(fileName);
     while(fgets(line,100,file)!=NULL){
             for(k=0; line[k]!='\0'; k++){
@@ -261,8 +268,31 @@ void maxFrequent(char *fileName){
             strcpy(word, words[i]);
         }
     }
-    printf("/nResult= %s",word);
+    printf("\nResult= %s",word);
+
+    fclose(file);
     
+}
+
+void delSpace(char *fileName){
+    char line[1000];
+    FILE *file = readFile(fileName);
+
+    while (fgets(line,100,file)!=NULL)
+    {
+        char blank[1000];
+        int j=0;
+        int sizeOfLine = sizeof(line)/sizeof(line[0]);
+        // printf("size of line is : %d",sizeOfLine);
+        for(int i=0;i<sizeOfLine;i++){
+            if((line[i] != ' ' && line[i] != '\t' && line[i] != '\n')){
+                blank[j] = line[i];
+                j++;
+            }
+        }
+        printf("\n%s",blank);
+    }
+    fclose(file);
 }
 
 void loop_run(char *inpstr, char **args)
