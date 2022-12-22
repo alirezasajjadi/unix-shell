@@ -22,7 +22,7 @@ void helpMenu();
 int commandsHandler(char **inp);
 void loop_run(char *inpstr, char **args);
 void printFirstPart(char *fileName);
-FILE* readFile(char* fileName);
+FILE *readFile(char *fileName);
 void maxFrequent(char *fileName);
 void delSpace(char *fileName);
 void uncommented(char *fileName);
@@ -209,7 +209,7 @@ int commandsHandler(char **args)
     return 0;
 }
 
-FILE* readFile(char *fileName)
+FILE *readFile(char *fileName)
 {
     FILE *ptr;
     ptr = fopen(fileName, "r");
@@ -228,73 +228,84 @@ void printFirstPart(char *fileName)
 
     while (fgets(line, 1000, file) != NULL)
     {
-        printf("\n%s",strtok(line," "));
+        printf("\n%s", strtok(line, " "));
     }
 
     fclose(file);
 }
 
-void maxFrequent(char *fileName){
-    int count,maxCount=0,i=0,j,k;
+void maxFrequent(char *fileName)
+{
+    int count, maxCount = 0, i = 0, j, k;
     char words[1000][1000], word[20]; // to remember
     char line[1000];
     FILE *file = readFile(fileName);
-    while(fgets(line,100,file)!=NULL){
-            for(k=0; line[k]!='\0'; k++){
-            //Here, i represents row and j represents column of two-dimensional array words 
-            if(line[k] != ' ' && line[k] != '\n' && line[k] != ',' && line[k] != '.' ){
+    while (fgets(line, 100, file) != NULL)
+    {
+        for (k = 0; line[k] != '\0'; k++)
+        {
+            // Here, i represents row and j represents column of two-dimensional array words
+            if (line[k] != ' ' && line[k] != '\n' && line[k] != ',' && line[k] != '.')
+            {
                 words[i][j++] = tolower(line[k]);
             }
-            else{
+            else
+            {
                 words[i][j] = '\0';
-                //Increment row count to store new word
+                // Increment row count to store new word
                 i++;
-                //Set column count to 0
+                // Set column count to 0
                 j = 0;
             }
         }
     }
-        int length = i;
-    
-    //Determine the most repeated word in a file
-    for(i = 0; i < length; i++){
+    int length = i;
+
+    // Determine the most repeated word in a file
+    for (i = 0; i < length; i++)
+    {
         count = 1;
-        //Count each word in the file and store it in variable count
-        for(j = i+1; j < length; j++){
-            if(strcmp(words[i], words[j]) == 0 && (strcmp(words[i]," ") != 0)){
+        // Count each word in the file and store it in variable count
+        for (j = i + 1; j < length; j++)
+        {
+            if (strcmp(words[i], words[j]) == 0 && (strcmp(words[i], " ") != 0))
+            {
                 count++;
-            } 
+            }
         }
-        //If maxCount is less than count then store value of count in maxCount 
-        //and corresponding word to variable word
-        if(count > maxCount){
+        // If maxCount is less than count then store value of count in maxCount
+        // and corresponding word to variable word
+        if (count > maxCount)
+        {
             maxCount = count;
             strcpy(word, words[i]);
         }
     }
-    printf("\nResult= %s",word);
+    printf("\nResult= %s", word);
 
     fclose(file);
-    
 }
 
-void delSpace(char *fileName){
+void delSpace(char *fileName)
+{
     char line[1000];
     FILE *file = readFile(fileName);
 
-    while (fgets(line,1000,file)!=NULL)
+    while (fgets(line, 1000, file) != NULL)
     {
         char blank[1000];
-        int j=0;
-        int sizeOfLine = sizeof(line)/sizeof(line[0]);
+        int j = 0;
+        int sizeOfLine = sizeof(line) / sizeof(line[0]);
         // printf("size of line is : %d",sizeOfLine);
-        for(int i=0;i<sizeOfLine;i++){
-            if((line[i] != ' ' && line[i] != '\t' && line[i] != '\n')){
+        for (int i = 0; i < sizeOfLine; i++)
+        {
+            if ((line[i] != ' ' && line[i] != '\t' && line[i] != '\n'))
+            {
                 blank[j] = line[i];
                 j++;
             }
         }
-        printf("\n%s",blank);
+        printf("\n%s", blank);
     }
     fclose(file);
 }
@@ -304,19 +315,21 @@ void uncommented(char *fileName)
     char line[1000];
     FILE *file = readFile(fileName);
 
-    while (fgets(line,1000,file)!=NULL)
+    while (fgets(line, 1000, file) != NULL)
     {
         char blank[1000];
-        int j=0, sizeOfLine = sizeof(line)/sizeof(line[0]);
-        for(int i=0, i<sizeOfLine;i++){
-            if(line[i]=='#')
+        int j = 0, sizeOfLine = sizeof(line) / sizeof(line[0]);
+        for (int i = 0; i < sizeOfLine; i++)
+        {
+            if (line[i] == '#')
                 break;
-            else{
-                blank[j]=line[i];
+            else
+            {
+                blank[j] = line[i];
                 j++;
             }
         }
-        printf("\n%s",blank);
+        printf("\n%s", blank);
     }
     fclose(file);
 }
