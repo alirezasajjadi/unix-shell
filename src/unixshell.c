@@ -312,24 +312,24 @@ void delSpace(char *fileName)
 
 void uncommented(char *fileName)
 {
-    char line[1000];
+    char line[1000][1000];
+    char chr;
+    int i=0,j=0;
     FILE *file = readFile(fileName);
-
-    while (fgets(line, 1000, file) != NULL)
+    while (chr = fgetc(file) != EOF){
+    if(chr == '#'){
+       while((chr = fgetc(file)) != '#' || (chr != EOF)); /*skip*/
+    }
+    if(chr=='\n')
+        i++;
+    line[i][j]=chr;
+    j++;
+    }
+    for(i=0; i<1000;i++)
     {
-        char blank[1000];
-        int j = 0, sizeOfLine = sizeof(line) / sizeof(line[0]);
-        for (int i = 0; i < sizeOfLine; i++)
-        {
-            if (line[i] == '#')
-                break;
-            else
-            {
-                blank[j] = line[i];
-                j++;
-            }
+        for(j=0;j<1000;j++){
+        printf("\n%s",line);
         }
-        printf("\n%s", blank);
     }
     fclose(file);
 }
