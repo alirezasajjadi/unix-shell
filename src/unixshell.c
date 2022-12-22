@@ -12,6 +12,17 @@
 
 #define clear() printf("\033[H\033[J")
 
+void init_shell();
+int printdir();
+int get_input(char *inp);
+void parseSpace(char *str, char **parsed);
+// void handeler(char *inp);
+void execArgs(char **parsed);
+void helpMenu();
+int commandsHandler(char **inp);
+void loop_run(char *inpstr, char **args);
+// void readFile();
+
 void init_shell()
 {
     clear();
@@ -32,7 +43,7 @@ int printdir()
     char cdir[1024];
     if (getcwd(cdir, sizeof(cdir)) != NULL)
     {
-        printf("\nDir", cdir);
+        printf("\nDir: %s", cdir);
     }
     else
     {
@@ -45,45 +56,65 @@ int printdir()
 int get_input(char *inp)
 {
     char *buffer;
-    buffer = readline("\n>>");
-    printf("\n>>"); //
+    buffer = readline("\n>>> ");
+    // printf("\n>>> ");
+    // gets(buffer);
     if (strlen(buffer) != 0)
     {
         // add_history(buffer);
-        int i;
-        for (i = 0; i < strlen(buffer) && buffer[i]; i++)
-        {
-            inp[i] = buffer[i];
-        }
-        inp[i] = '\0';
+        strcpy(inp, buffer);
+        return 0;
     }
-    return 0;
-}
-
-void handeler(char *inp)
-{
-    char(*args)[MAXLIST / 2 + 1];
-    char *token = strtok(inp, " ");
-    int i = 0;
-    while (token != NULL)
+    else
     {
-        strcpy(args[i], token);
-        // args[i] = token;
-        //  printf("\n%s token",token);
-        //  printf("\n%s arg %d", args[i],i);
-
-        token = strtok(NULL, " ");
-        // if(strlen(token)==0)
-        // i--;
-        i++;
+        return 1;
     }
 }
+
+void parseSpace(char *str, char **parsed)
+{
+    int i;
+
+    for (i = 0; i < MAXLIST; i++)
+    {
+        parsed[i] = strsep(&str, " ");
+
+        if (parsed[i] == NULL)
+            break;
+        if (strlen(parsed[i]) == 0)
+            i--;
+    }
+}
+
+// void handeler(char *inp)
+// {
+//     char *args[MAXLIST / 2 + 1];
+//     char *token = strtok(inp, " ");
+//     int i = 0;
+//     while (token != NULL)
+//     {
+//         strcpy(args[i], token);
+//         // args[i] = token;
+//         //  printf("\n%s token",token);
+//          printf("\n%s arg %d", args[i],i);
+
+//         token = strtok(NULL, " ");
+//         if(strlen(token)==0)
+//             i--;
+//         i++;
+//     }
+//     int x= 0;
+//     printf("\nx = %d", x);
+
+//     // x = commandsHandler(args);
+//     printf("\nx = %d", x);
+// }
 
 void execArgs(char **parsed)
 {
 
     pid_t pid = fork();
-
+    printf("\n help commad");
     if (pid == -1)
     {
         printf("\nFailed forking child..");
@@ -94,10 +125,6 @@ void execArgs(char **parsed)
         if (execvp(parsed[0], parsed) < 0)
         {
             printf("\nCould not execute command..");
-        }
-        else
-        {
-            commandsHandler
         }
         exit(0);
     }
@@ -126,9 +153,9 @@ void helpMenu()
     return;
 }
 
-int commandsHandler(char **inp)
+int commandsHandler(char **args)
 {
-    int numCmd = 8;
+    int numCmd = 9;
     int i;
     int switchArg = 0;
     char *cmdList[numCmd];
@@ -141,70 +168,69 @@ int commandsHandler(char **inp)
     cmdList[5] = "numLine";
     cmdList[6] = "firstTen";
     cmdList[7] = "pipe";
+    cmdList[8] = "help";
     for (i = 0; i < numCmd; i++)
     {
-        if (strcmp(inp[0], cmdList[i]) == 0)
+        if (strcmp(args[0], cmdList[i]) == 0)
         {
-            switcArg = i + 1;
+            switchArg = i + 1;
             break;
         }
     }
-    // Forking a child
-    pid_t pid = fork();
+    switch (switchArg)
+    {
+    case 1:
+        chdir(args[1]);
+        return 1;
+    case 2:
+        printf("\n type of = %s", args[1]);
+        // printFirstPart(inp[1]);
+        return 1;
+    case 9:
+        helpMenu();
+        return 1;
+    default:
+        break;
+    }
 
-    if (pid == -1)
-    {
-        printf("\nFailed forking child..");
-        return;
-    }
-    else if (pid == 0)
-    {
-        switch (switchArg){
-        case 1:
-            chdir(inp[1]);
-            break;
-        case 2:
-        printf("%s", inp[1]);
-            printFirstPart(inp[1]);
-            break;
-        default:
-            break;
-        }
-        exit(0);
-    }
-    else{
-        // waiting for child to terminate
-        wait(NULL);
-    }
+    return 0;
 }
 
-void readFile()
+// void readFile()
+// {
+//     FILE *ptr;
+//     char ch;
+//     ptr = fopen("test.txt", "r");
+//     if (NULL == ptr)
+//     {
+//         printf("file can't be opened \n");
+//     }
+// }
+
+// void printFirstPart(char **inp){
+
+// }
+void loop_run(char *inpstr, char **args)
 {
-    FILE *ptr;
-    char ch;
-    ptr = fopen("test.txt", "r");
-    if (NULL == ptr)
+
+    while (1)
     {
-        printf("file can't be opened \n");
+        printdir();
+        if (get_input(inpstr))
+            continue;
+        // get_input(inpstr);
+        parseSpace(inpstr, args);
+
+        commandsHandler(args);
+        break;
     }
-}
-
-void printFirstPart(char **inp){
-
 }
 
 int main()
 {
     char inpstr[MAXCOM];
-
-    while (1)
-    {
-        printdir();
-
-        get_input(inpstr);
-        handeler(inpstr);
-
-        break;
-    }
+    char *args[MAXLIST / 2 + 1];
+    init_shell();
+    loop_run(inpstr, args);
     return 0;
 }
