@@ -19,13 +19,30 @@ void parseSpace(char *str, char **parsed);
 // void handeler(char *inp);
 void execArgs(char **parsed);
 void helpMenu();
-int commandsHandler(char **inp);
+// int commandsHandler(char **inp);
+void execArgs(char **args);
 void loop_run(char *inpstr, char **args);
+// void changeDir(char **args);
 void printFirstPart(char *fileName);
 FILE *readFile(char *fileName);
 void maxFrequent(char *fileName);
 void delSpace(char *fileName);
 void uncommented(char *fileName);
+
+struct builtin
+{
+    char *name;
+    void (*func)(char *fileName);
+};
+
+struct builtin builtin[] =
+    {
+        // {"cd",changeDir},
+        {"pfp", printFirstPart},
+        {"mxfreq", maxFrequent},
+        {"delspace", delSpace},
+        {"shuncmt", uncommented},
+};
 
 void init_shell()
 {
@@ -114,7 +131,7 @@ void parseSpace(char *str, char **parsed)
 //     printf("\nx = %d", x);
 // }
 
-void execArgs(char **parsed)
+void execArgs(char **args)
 {
 
     pid_t pid = fork();
@@ -126,10 +143,22 @@ void execArgs(char **parsed)
     }
     else if (pid == 0)
     {
-        if (execvp(parsed[0], parsed) < 0)
+        int flag = 0;
+        for (int i = 0; i < 10; i++)
         {
-            printf("\nCould not execute command..");
+            if (strcmp(args[0], builtin[i].name) == 0)
+            {
+                builtin[i].func(args[1]);
+                flag = 1;
+                break;
+            }
         }
+
+        if (flag == 0 && execvp(args[0], args) < 0)
+        {
+            fprintf(stderr, "\nCould not execute command..");
+        }
+
         exit(0);
     }
     else
@@ -157,57 +186,73 @@ void helpMenu()
     return;
 }
 
-int commandsHandler(char **args)
-{
-    int numCmd = 9;
-    int i;
-    int switchArg = 0;
-    char *cmdList[numCmd];
-    char *username;
-    cmdList[0] = "cd";
-    cmdList[1] = "pfp";
-    cmdList[2] = "mxfreq";
-    cmdList[3] = "delspace";
-    cmdList[4] = "shuncmt";
-    cmdList[5] = "numLine";
-    cmdList[6] = "firstTen";
-    cmdList[7] = "pipe";
-    cmdList[8] = "help";
-    for (i = 0; i < numCmd; i++)
-    {
-        if (strcmp(args[0], cmdList[i]) == 0)
-        {
-            switchArg = i + 1;
-            break;
-        }
-    }
+// int commandsHandler(char **args)
+// {
+//     int numCmd = 10;
+//     int i;
+//     int switchArg = 0;
+// char *cmdList[numCmd];
+// char *username;
+// cmdList[0] = "cd";
+// cmdList[1] = "pfp";
+// cmdList[2] = "mxfreq";
+// cmdList[3] = "delspace";
+// cmdList[4] = "shuncmt";
+// cmdList[5] = "numLine";
+// cmdList[6] = "firstTen";
+// cmdList[7] = "pipe";
+// cmdList[8] = "help";
+// cmdList[9] = "exit";
+// for (i = 0; i < numCmd; i++)
+// {
+//     if (strcmp(args[0], cmdList[i]) == 0)
+//     {
+//         switchArg = i + 1;
+//         break;
+//     }
+// }
 
-    switch (switchArg)
-    {
-    case 1:
-        chdir(args[1]);
-        return 1;
-    case 2:
-        printFirstPart(args[1]);
-        return 1;
-    case 3:
-        maxFrequent(args[1]);
-        return 1;
-    case 4:
-        delSpace(args[1]);
-        return 1;
-    case 5:
-        uncommented(args[1]);
-        return 1;
-    case 9:
-        helpMenu();
-        return 1;
-    default:
-        break;
-    }
+// switch (switchArg)
+// {
+// case 1:
+//     chdir(args[1]);
+//     return 1;
+// case 2:
+//     printFirstPart(args[1]);
+//     return 1;
+// case 3:
+//     maxFrequent(args[1]);
+//     return 1;
+// case 4:
+//     delSpace(args[1]);
+//     return 1;
+// case 5:
+//     uncommented(args[1]);
+//     return 1;
+// case 9:
+//     helpMenu();
+//     return 1;
+// default:
+//     break;
+// }
 
-    return 0;
-}
+//     return 0;
+// }
+
+// void changeDir(char **args)
+// {
+//     if (args[1] == NULL)
+//     {
+//         fprintf(stderr, "shell: cd: missing argument\n");
+//     }
+//     else
+//     {
+//         if (chdir(args[1]) != 0)
+//         {
+//             perror("shell: cd");
+//         }
+//     }
+// }
 
 FILE *readFile(char *fileName)
 {
@@ -228,7 +273,8 @@ void printFirstPart(char *fileName)
 
     while (fgets(line, 1000, file) != NULL)
     {
-        printf("\n%s", strtok(line, " "));
+        char *token = strtok(line, " ");
+        printf("%s",token);
     }
 
     fclose(file);
@@ -312,24 +358,24 @@ void delSpace(char *fileName)
 
 void uncommented(char *fileName)
 {
-    char line[1000][1000];
-    char chr;
-    int i=0,j=0;
+    char line[1000];
     FILE *file = readFile(fileName);
-    while (chr = fgetc(file) != EOF){
-    if(chr == '#'){
-       while((chr = fgetc(file)) != '#' || (chr != EOF)); /*skip*/
-    }
-    if(chr=='\n')
-        i++;
-    line[i][j]=chr;
-    j++;
-    }
-    for(i=0; i<1000;i++)
+
+    while (fgets(line, 1000, file) != NULL)
     {
-        for(j=0;j<1000;j++){
-        printf("\n%s",line);
+        char blank[1000];
+        int j = 0, sizeOfLine = sizeof(line) / sizeof(line[0]);
+        for (int i = 0; i < sizeOfLine; i++)
+        {
+            if (line[i] == '#')
+                break;
+            else
+            {
+                blank[j] = line[i];
+                j++;
+            }
         }
+        printf("\n%s", blank);
     }
     fclose(file);
 }
@@ -342,7 +388,8 @@ void loop_run(char *inpstr, char **args)
             continue;
         // get_input(inpstr);
         parseSpace(inpstr, args);
-        commandsHandler(args);
+        // commandsHandler(args);
+        execArgs(args);
     }
 }
 
