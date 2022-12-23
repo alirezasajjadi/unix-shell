@@ -28,6 +28,7 @@ FILE *readFile(char *fileName);
 void maxFrequent(char *fileName);
 void delSpace(char *fileName);
 void uncommented(char *fileName);
+void numLine(char *file);
 
 struct builtin
 {
@@ -42,6 +43,8 @@ struct builtin builtin[] =
         {"mxfreq", maxFrequent},
         {"delspace", delSpace},
         {"shuncmt", uncommented},
+        {"numLine",numLine},
+
 };
 
 void init_shell()
@@ -378,6 +381,17 @@ void uncommented(char *fileName)
         printf("\n%s", blank);
     }
     fclose(file);
+}
+
+void numLine(char *fileName){
+    FILE *file = readFile(fileName);
+    int count = 0;
+    char c;
+    for (c = getc(file); c != EOF; c = getc(file))
+        if (c == '\n')
+            count = count + 1;
+    fclose(file);
+    printf("The file %s has %d lines\n ", filename, count);
 }
 void loop_run(char *inpstr, char **args)
 {
