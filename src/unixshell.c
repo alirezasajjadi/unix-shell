@@ -29,6 +29,8 @@ void maxFrequent(char *fileName);
 void delSpace(char *fileName);
 void uncommented(char *fileName);
 void numLine(char *file);
+void firstTenLine(char *fileName);
+
 
 struct builtin
 {
@@ -139,36 +141,42 @@ void execArgs(char **args)
 
     pid_t pid = fork();
 
+
     if (pid == -1)
     {
         printf("\nFailed forking child..");
         return;
     }
+    else if(pid > 0)
+    {
+        printf("\nparent wait");
+        // waiting for child to terminate
+        wait(NULL);
+        return;
+    }
     else if (pid == 0)
     {
+        printf("\nin child");
+
         int flag = 0;
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 5; i++)
         {
             if (strcmp(args[0], builtin[i].name) == 0)
             {
                 builtin[i].func(args[1]);
                 flag = 1;
-                break;
+                printf("\nin child run builtin");
+                exit(0);
+                return;
             }
         }
 
-        if (flag == 0 && execvp(args[0], args) < 0)
+        if (execvp(args[0], args) < 0)
         {
             fprintf(stderr, "\nCould not execute command..");
         }
 
         exit(0);
-    }
-    else
-    {
-        // waiting for child to terminate
-        wait(NULL);
-        return;
     }
 }
 
@@ -276,8 +284,8 @@ void printFirstPart(char *fileName)
 
     while (fgets(line, 1000, file) != NULL)
     {
-        char *token = strtok(line, " ");
-        printf("%s",token);
+        char *token = strtok(line, " ,'(");
+        printf("%s\n",token);
     }
 
     fclose(file);
@@ -391,8 +399,23 @@ void numLine(char *fileName){
         if (c == '\n')
             count = count + 1;
     fclose(file);
-    printf("The file %s has %d lines\n ", filename, count);
+    printf("The file %s has %d lines\n ", fileName, count);
 }
+
+void firstTenLine(char *fileName){
+    FILE *file = readFile(fileName);
+    char line[1000];
+    int numLine = 0;
+
+    while(fgets(line,1000,file)!=NULL){
+        numLine++;
+        if(numLine > 10){
+            break;
+        }
+        printf("%s",line);
+    }
+}
+
 void loop_run(char *inpstr, char **args)
 {
     while (1)
