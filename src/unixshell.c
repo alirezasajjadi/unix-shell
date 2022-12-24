@@ -46,7 +46,7 @@ struct builtin builtin[] =
         {"delspace", delSpace},
         {"shuncmt", uncommented},
         {"numLine",numLine},
-
+        {"firstten",firstTen},
 };
 
 void init_shell()
@@ -197,73 +197,21 @@ void helpMenu()
     return;
 }
 
-// int commandsHandler(char **args)
-// {
-//     int numCmd = 10;
-//     int i;
-//     int switchArg = 0;
-// char *cmdList[numCmd];
-// char *username;
-// cmdList[0] = "cd";
-// cmdList[1] = "pfp";
-// cmdList[2] = "mxfreq";
-// cmdList[3] = "delspace";
-// cmdList[4] = "shuncmt";
-// cmdList[5] = "numLine";
-// cmdList[6] = "firstTen";
-// cmdList[7] = "pipe";
-// cmdList[8] = "help";
-// cmdList[9] = "exit";
-// for (i = 0; i < numCmd; i++)
-// {
-//     if (strcmp(args[0], cmdList[i]) == 0)
-//     {
-//         switchArg = i + 1;
-//         break;
-//     }
-// }
 
-// switch (switchArg)
-// {
-// case 1:
-//     chdir(args[1]);
-//     return 1;
-// case 2:
-//     printFirstPart(args[1]);
-//     return 1;
-// case 3:
-//     maxFrequent(args[1]);
-//     return 1;
-// case 4:
-//     delSpace(args[1]);
-//     return 1;
-// case 5:
-//     uncommented(args[1]);
-//     return 1;
-// case 9:
-//     helpMenu();
-//     return 1;
-// default:
-//     break;
-// }
-
-//     return 0;
-// }
-
-// void changeDir(char **args)
-// {
-//     if (args[1] == NULL)
-//     {
-//         fprintf(stderr, "shell: cd: missing argument\n");
-//     }
-//     else
-//     {
-//         if (chdir(args[1]) != 0)
-//         {
-//             perror("shell: cd");
-//         }
-//     }
-// }
+void changeDir(char *args)
+{
+    if (args[1] == NULL)
+    {
+        fprintf(stderr, "shell: cd: missing argument\n");
+    }
+    else
+    {
+        if (chdir(args[1]) != 0)
+        {
+            perror("shell: cd");
+        }
+    }
+}
 
 FILE *readFile(char *fileName)
 {
