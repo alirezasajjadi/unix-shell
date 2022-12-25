@@ -13,7 +13,7 @@
 #define clear() printf("\033[H\033[J")
 
 void init_shell();
-int printdir();
+void printdir();
 int get_input(char *inp);
 void parseSpace(char *str, char **parsed);
 // void handeler(char *inp);
@@ -22,7 +22,7 @@ void helpMenu();
 // int commandsHandler(char **inp);
 void execArgs(char **args);
 void loop_run(char *inpstr, char **args);
-// void changeDir(char **args);
+void changeDir(char *args);
 void printFirstPart(char *fileName);
 FILE *readFile(char *fileName);
 void maxFrequent(char *fileName);
@@ -30,7 +30,7 @@ void delSpace(char *fileName);
 void uncommented(char *fileName);
 void numLine(char *file);
 void firstTenLine(char *fileName);
-
+void historyFile();
 
 struct builtin
 {
@@ -40,13 +40,13 @@ struct builtin
 
 struct builtin builtin[] =
     {
-        // {"cd",changeDir},
+        {"cd",changeDir},
         {"pfp", printFirstPart},
         {"mxfreq", maxFrequent},
         {"delspace", delSpace},
         {"shuncmt", uncommented},
-        {"numLine",numLine},
-        {"firstten",firstTen},
+        {"numline", numLine},
+        {"firstten", firstTenLine},
 };
 
 void init_shell()
@@ -64,30 +64,28 @@ void init_shell()
     clear();
 }
 
-int printdir()
+void printdir()
 {
     char cdir[1024];
-    if (getcwd(cdir, sizeof(cdir)) != NULL)
-    {
-        printf("\nDir: %s", cdir);
-    }
-    else
-    {
-        perror("getcwd() error");
-        return 1;
-    }
-    return 0;
+    getcwd(cdir, sizeof(cdir));
+    printf("\nDir: %s", cdir);
 }
 
 int get_input(char *inp)
 {
     char *buffer;
-    buffer = readline("\n>>> ");
+    buffer = readline("\n>>>");
     // printf("\n>>> ");
     // gets(buffer);
+    if (strstr(buffer, "exit()"))
+    {
+        // historyFile();
+        exit(0);
+    }
     if (strlen(buffer) != 0)
     {
-        // add_history(buffer);
+        add_history(buffer);
+        historyFile();
         strcpy(inp, buffer);
         return 0;
     }
@@ -95,6 +93,19 @@ int get_input(char *inp)
     {
         return 1;
     }
+}
+
+void historyFile()
+{
+    HISTORY_STATE *his = history_get_history_state();
+
+    HIST_ENTRY **mylist = history_list();
+
+    FILE *f = fopen("history.txt", "a");
+
+    fprintf(f, "%s\n", mylist[his->length - 1]->line);
+
+    fclose(f);
 }
 
 void parseSpace(char *str, char **parsed)
@@ -141,31 +152,31 @@ void execArgs(char **args)
 
     pid_t pid = fork();
 
-
     if (pid == -1)
     {
         printf("\nFailed forking child..");
         return;
     }
-    else if(pid > 0)
+    else if (pid > 0)
     {
-        printf("\nparent wait");
+        // printf("\nparent wait");
         // waiting for child to terminate
         wait(NULL);
         return;
     }
     else if (pid == 0)
     {
-        printf("\nin child");
+        // printf("\nin child");
 
-        int flag = 0;
-        for (int i = 0; i < 5; i++)
+        // if (strcmp(args[0], "cd"))
+        //     changeDir(args[1]);
+
+        for (int i = 0; i < 7; i++)
         {
             if (strcmp(args[0], builtin[i].name) == 0)
             {
                 builtin[i].func(args[1]);
-                flag = 1;
-                printf("\nin child run builtin");
+                // printf("\nin child run builtin");
                 exit(0);
                 return;
             }
@@ -197,16 +208,15 @@ void helpMenu()
     return;
 }
 
-
 void changeDir(char *args)
 {
-    if (args[1] == NULL)
+    if (args == NULL)
     {
         fprintf(stderr, "shell: cd: missing argument\n");
     }
     else
     {
-        if (chdir(args[1]) != 0)
+        if (chdir(args) != 0)
         {
             perror("shell: cd");
         }
@@ -229,11 +239,17 @@ void printFirstPart(char *fileName)
 {
     char line[1000];
     FILE *file = readFile(fileName);
+    char *token;
 
-    while (fgets(line, 1000, file) != NULL)
+    while (fgets(line, sizeof(line), file) != NULL)
     {
-        char *token = strtok(line, " ,'(");
-        printf("%s\n",token);
+        if (strstr(line, " "))
+        {
+            token = strtok(line, " ");
+            printf("%s\n", token);
+        }
+        else
+            printf("%s", line);
     }
 
     fclose(file);
@@ -242,10 +258,10 @@ void printFirstPart(char *fileName)
 void maxFrequent(char *fileName)
 {
     int count, maxCount = 0, i = 0, j, k;
-    char words[1000][1000], word[20]; // to remember
+    char words[1000][1000], word[100]; // to remember
     char line[1000];
     FILE *file = readFile(fileName);
-    while (fgets(line, 100, file) != NULL)
+    while (fgets(line, 1000, file) != NULL)
     {
         for (k = 0; line[k] != '\0'; k++)
         {
@@ -319,9 +335,15 @@ void uncommented(char *fileName)
 {
     char line[1000];
     FILE *file = readFile(fileName);
-
+    char *token;
     while (fgets(line, 1000, file) != NULL)
     {
+        // if(strstr(line, " ")){
+        //     token = strtok(line, "#");
+        //     printf("%s\n", token);
+        // }
+        // else
+        //     printf("%s", line);
         char blank[1000];
         int j = 0, sizeOfLine = sizeof(line) / sizeof(line[0]);
         for (int i = 0; i < sizeOfLine; i++)
@@ -334,12 +356,13 @@ void uncommented(char *fileName)
                 j++;
             }
         }
-        printf("\n%s", blank);
+        printf("%s\n", blank);
     }
     fclose(file);
 }
 
-void numLine(char *fileName){
+void numLine(char *fileName)
+{
     FILE *file = readFile(fileName);
     int count = 0;
     char c;
@@ -350,17 +373,20 @@ void numLine(char *fileName){
     printf("The file %s has %d lines\n ", fileName, count);
 }
 
-void firstTenLine(char *fileName){
+void firstTenLine(char *fileName)
+{
     FILE *file = readFile(fileName);
     char line[1000];
     int numLine = 0;
 
-    while(fgets(line,1000,file)!=NULL){
+    while (fgets(line, 1000, file) != NULL)
+    {
         numLine++;
-        if(numLine > 10){
+        if (numLine > 10)
+        {
             break;
         }
-        printf("%s",line);
+        printf("%s", line);
     }
 }
 
@@ -384,5 +410,6 @@ int main()
     char *args[MAXLIST / 2 + 1];
     init_shell();
     loop_run(inpstr, args);
+
     return 0;
 }
