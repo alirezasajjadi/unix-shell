@@ -33,7 +33,6 @@ void firstTenLine(char *fileName);
 void historyFile();
 void sigintHandler(int sig_num);
 
-
 struct builtin
 {
     char *name;
@@ -260,100 +259,56 @@ void printFirstPart(char *fileName)
 
     fclose(file);
 }
-void maxFrequent(char *fileName){
-    int count,maxCount=0,i=0,j,k;
-    char words[1000][1000], word[20]; // to remember
+void maxFrequent(char *fileName)
+{
+
+    // char *bashCmd="bash max.sh ";
+    // // char *file;
+    // // strcpy(file,fileName);
+    // strcat(bashCmd, fileName);
+    // system(bashCmd);
+
+    int count, maxCount = 0, i = 0, j, k;
+    char words[1000][1000], word[100];
     char line[100];
     FILE *file = readFile(fileName);
-    while(fgets(line,100,file)!=NULL){
-            for(k=0; line[k]!='\0'; k++){
-            //Here, i represents row and j represents column of two-dimensional array words 
-            if(line[k] != ' ' && line[k] != '\n' && line[k] != ',' && line[k] != '.' ){
+    while (fgets(line, 100, file) != NULL)
+    {
+        for (k = 0; line[k] != '\0'; k++)
+        {
+
+            if (line[k] != ' ' && line[k] != '\n' && line[k] != ',' && line[k] != '.')
+            {
                 words[i][j++] = tolower(line[k]);
             }
-            else{
+            else
+            {
                 words[i][j] = '\0';
-                //Increment row count to store new word
                 i++;
-                //Set column count to 0
                 j = 0;
             }
         }
     }
-        int length = i;
-    
-    //Determine the most repeated word in a file
-    for(i = 0; i < length; i++){
+    int length = i;
+    for (i = 0; i < length; i++)
+    {
         count = 1;
-        //Count each word in the file and store it in variable count
-        for(j = i+1; j < length; j++){
-            if(strcmp(words[i], words[j]) == 0 && (strcmp(words[i]," ") != 0)){
+        for (j = i + 1; j < length; j++)
+        {
+            if (strcmp(words[i], words[j]) == 0 && (strcmp(words[i], " ") != 0))
+            {
                 count++;
-            } 
+            }
         }
-        //If maxCount is less than count then store value of count in maxCount 
-        //and corresponding word to variable word
-        if(count > maxCount){
+
+        if (count > maxCount)
+        {
             maxCount = count;
             strcpy(word, words[i]);
         }
     }
-    printf("\n Result= %s",word);
-    
+    printf("\nResult= %s", word);
 }
-// void maxFrequent(char *fileName)
-// {
-//     // printf("\n in freq");
-//     int count, maxCount = 0, i = 0, j, k;
-//     char words[1000][1000], word[100];
-//     char *line;
-//     size_t read,len=0;
-//     FILE *file = readFile(fileName);
-//     while (read==getline(&line, &len, file) != -1)
-//     {
-//         for (k = 0; line[k] != '\0'; k++)
-//         {
-//             // Here, i represents row and j represents column of two-dimensional array words
-//             if (line[k] != ' ' && line[k] != '\n' && line[k] != ',' && line[k] != '.')
-//             {
-//                 words[i][j++] = tolower(line[k]);
-//             }
-//             else
-//             {
-//                 words[i][j] = '\0';
-//                 // Increment row count to store new word
-//                 i++;
-//                 // Set column count to 0
-//                 j = 0;
-//             }
-//         }
-//     }
-//     int length = i;
-
-//     // Determine the most repeated word in a file
-//     for (i = 0; i < length; i++)
-//     {
-//         count = 1;
-//         // Count each word in the file and store it in variable count
-//         for (j = i + 1; j < length; j++)
-//         {
-//             if (strcmp(words[i], words[j]) == 0 && (strcmp(words[i], " ") != 0))
-//             {
-//                 count++;
-//             }
-//         }
-//         // If maxCount is less than count then store value of count in maxCount
-//         // and corresponding word to variable word
-//         if (count > maxCount)
-//         {
-//             maxCount = count;
-//             strcpy(word, words[i]);
-//         }
-//     }
-//     printf("\nResult= %s", word);
-
-//     fclose(file);
-// }
 
 void delSpace(char *fileName)
 {
@@ -365,7 +320,6 @@ void delSpace(char *fileName)
         char blank[1000];
         int j = 0;
         int sizeOfLine = sizeof(line) / sizeof(line[0]);
-        // printf("size of line is : %d",sizeOfLine);
         for (int i = 0; i < sizeOfLine; i++)
         {
             if ((line[i] != ' ' && line[i] != '\t' && line[i] != '\n'))
@@ -386,12 +340,6 @@ void uncommented(char *fileName)
     char *token;
     while (fgets(line, 1000, file) != NULL)
     {
-        // if(strstr(line, " ")){
-        //     token = strtok(line, "#");
-        //     printf("%s\n", token);
-        // }
-        // else
-        //     printf("%s", line);
         char blank[1000];
         int j = 0, sizeOfLine = sizeof(line) / sizeof(line[0]);
         for (int i = 0; i < sizeOfLine; i++)
@@ -467,7 +415,6 @@ int main()
     signal(SIGINT, sigintHandler);
 
     loop_run(inpstr, args);
-
 
     return 0;
 }
