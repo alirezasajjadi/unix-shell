@@ -31,6 +31,8 @@ void uncommented(char *fileName);
 void numLine(char *file);
 void firstTenLine(char *fileName);
 void historyFile();
+void sigintHandler(int sig_num);
+
 
 struct builtin
 {
@@ -395,6 +397,13 @@ void firstTenLine(char *fileName)
     }
 }
 
+void sigintHandler(int sig_num)
+{
+    signal(SIGINT, sigintHandler);
+    printf("\n Cannot be terminated using Ctrl+C \n");
+    fflush(stdout);
+}
+
 void loop_run(char *inpstr, char **args)
 {
     while (1)
@@ -414,7 +423,10 @@ int main()
     char inpstr[MAXCOM];
     char *args[MAXLIST / 2 + 1];
     init_shell();
+    signal(SIGINT, sigintHandler);
+
     loop_run(inpstr, args);
+
 
     return 0;
 }
