@@ -266,9 +266,10 @@ void maxFrequent(char *fileName)
 {
     int count, maxCount = 0, i = 0, j, k;
     char words[1000][1000], word[100]; // to remember
-    char line[1000];
+    char *line;
+    size_t read,len=0;
     FILE *file = readFile(fileName);
-    while (fgets(line, 1000, file) != NULL)
+    while (read==getline(&line, &len, file) != -1)
     {
         for (k = 0; line[k] != '\0'; k++)
         {
