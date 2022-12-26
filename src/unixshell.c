@@ -40,7 +40,7 @@ struct builtin
 
 struct builtin builtin[] =
     {
-        {"cd",changeDir},
+        // {"cd",changeDir},
         {"pfp", printFirstPart},
         {"mxfreq", maxFrequent},
         {"delspace", delSpace},
@@ -150,44 +150,49 @@ void parseSpace(char *str, char **parsed)
 void execArgs(char **args)
 {
 
-    pid_t pid = fork();
-
-    if (pid == -1)
+    if (strstr(args[0], "cd"))
+        changeDir(args[1]);
+    else
     {
-        printf("\nFailed forking child..");
-        return;
-    }
-    else if (pid > 0)
-    {
-        // printf("\nparent wait");
-        // waiting for child to terminate
-        wait(NULL);
-        return;
-    }
-    else if (pid == 0)
-    {
-        // printf("\nin child");
+        pid_t pid = fork();
 
-        // if (strcmp(args[0], "cd"))
-        //     changeDir(args[1]);
-
-        for (int i = 0; i < 7; i++)
+        if (pid == -1)
         {
-            if (strcmp(args[0], builtin[i].name) == 0)
+            printf("\nFailed forking child..");
+            return;
+        }
+        else if (pid > 0)
+        {
+            // printf("\nparent wait");
+            // waiting for child to terminate
+            wait(NULL);
+            return;
+        }
+        else if (pid == 0)
+        {
+            // printf("\nin child");
+
+            // if (strcmp(args[0], "cd"))
+            //     changeDir(args[1]);
+
+            for (int i = 0; i < 6; i++)
             {
-                builtin[i].func(args[1]);
-                // printf("\nin child run builtin");
-                exit(0);
-                return;
+                if (strcmp(args[0], builtin[i].name) == 0)
+                {
+                    builtin[i].func(args[1]);
+                    // printf("\nin child run builtin");
+                    exit(0);
+                    return;
+                }
             }
-        }
 
-        if (execvp(args[0], args) < 0)
-        {
-            fprintf(stderr, "\nCould not execute command..");
-        }
+            if (execvp(args[0], args) < 0)
+            {
+                fprintf(stderr, "\nCould not execute command..");
+            }
 
-        exit(0);
+            exit(0);
+        }
     }
 }
 
