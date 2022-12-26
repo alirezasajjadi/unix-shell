@@ -42,7 +42,6 @@ struct builtin
 
 struct builtin builtin[] =
     {
-        // {"cd",changeDir},
         {"pfp", printFirstPart},
         {"mxfreq", maxFrequent},
         {"delspace", delSpace},
@@ -264,6 +263,7 @@ void printFirstPart(char *fileName)
 
 void maxFrequent(char *fileName)
 {
+    // printf("\n in freq");
     int count, maxCount = 0, i = 0, j, k;
     char words[1000][1000], word[100]; // to remember
     char *line;
