@@ -298,7 +298,7 @@ void maxFrequent(char *fileName){
             strcpy(word, words[i]);
         }
     }
-    printf("/nResult= %s",word);
+    printf("\n Result= %s",word);
     
 }
 // void maxFrequent(char *fileName)
