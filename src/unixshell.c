@@ -389,12 +389,14 @@ void firstTenLine(char *fileName)
 void sigintHandler(int sig_num)
 {
     signal(SIGINT, sigintHandler);
-    printf("\n Cannot be terminated using Ctrl+C \n");
+    // printf("\n Cannot be terminated using Ctrl+C \n");
     fflush(stdout);
 }
 
 void loop_run(char *inpstr, char **args)
 {
+    signal(SIGINT, sigintHandler);
+
     while (1)
     {
         printdir();
@@ -402,7 +404,7 @@ void loop_run(char *inpstr, char **args)
             continue;
         // get_input(inpstr);
         parseSpace(inpstr, args);
-        // commandsHandler(args);
+        // commandsHandler(args);   
         execArgs(args);
     }
 }
@@ -412,8 +414,6 @@ int main()
     char inpstr[MAXCOM];
     char *args[MAXLIST / 2 + 1];
     init_shell();
-    signal(SIGINT, sigintHandler);
-
     loop_run(inpstr, args);
 
     return 0;
