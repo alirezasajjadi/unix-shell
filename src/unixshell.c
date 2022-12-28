@@ -75,8 +75,6 @@ int get_input(char *inp)
 {
     char *buffer;
     buffer = readline("\n>>>");
-    // printf("\n>>> ");
-    // gets(buffer);
     if (strstr(buffer, "exit()"))
     {
         // historyFile();
@@ -163,24 +161,16 @@ void execArgs(char **args)
         }
         else if (pid > 0)
         {
-            // printf("\nparent wait");
-            // waiting for child to terminate
             wait(NULL);
             return;
         }
         else if (pid == 0)
         {
-            // printf("\nin child");
-
-            // if (strcmp(args[0], "cd"))
-            //     changeDir(args[1]);
-
             for (int i = 0; i < 6; i++)
             {
                 if (strcmp(args[0], builtin[i].name) == 0)
                 {
                     builtin[i].func(args[1]);
-                    // printf("\nin child run builtin");
                     exit(0);
                     return;
                 }
@@ -402,9 +392,7 @@ void loop_run(char *inpstr, char **args)
         printdir();
         if (get_input(inpstr))
             continue;
-        // get_input(inpstr);
         parseSpace(inpstr, args);
-        // commandsHandler(args);   
         execArgs(args);
     }
 }
@@ -415,6 +403,5 @@ int main()
     char *args[MAXLIST / 2 + 1];
     init_shell();
     loop_run(inpstr, args);
-
     return 0;
 }
