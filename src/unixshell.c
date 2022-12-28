@@ -45,6 +45,7 @@ struct builtin builtin[] =
         {"shuncmt", uncommented},
         {"numline", numLine},
         {"firstten", firstTenLine},
+        {"help",helpMenu},
 };
 
 void init_shell()
@@ -143,7 +144,7 @@ void execArgs(char **args)
         else if (pid == 0)
         {
 
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 7; i++)
             {
                 if (strcmp(args[0], builtin[i].name) == 0)
                 {
@@ -162,11 +163,6 @@ void execArgs(char **args)
         }
     }
 }
-
-void exitFunc(char *args){
-
-}
-
 
 void helpMenu()
 {
