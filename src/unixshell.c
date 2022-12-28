@@ -16,10 +16,8 @@ void init_shell();
 void printdir();
 int get_input(char *inp);
 void parseSpace(char *str, char **parsed);
-// void handeler(char *inp);
 void execArgs(char **parsed);
 void helpMenu();
-// int commandsHandler(char **inp);
 void execArgs(char **args);
 void loop_run(char *inpstr, char **args);
 void changeDir(char *args);
@@ -75,11 +73,9 @@ int get_input(char *inp)
 {
     char *buffer;
     buffer = readline("\n>>>");
-    // printf("\n>>> ");
-    // gets(buffer);
+
     if (strstr(buffer, "exit()"))
     {
-        // historyFile();
         exit(0);
     }
     if (strlen(buffer) != 0)
@@ -123,35 +119,12 @@ void parseSpace(char *str, char **parsed)
     }
 }
 
-// void handeler(char *inp)
-// {
-//     char *args[MAXLIST / 2 + 1];
-//     char *token = strtok(inp, " ");
-//     int i = 0;
-//     while (token != NULL)
-//     {
-//         strcpy(args[i], token);
-//         // args[i] = token;
-//         //  printf("\n%s token",token);
-//          printf("\n%s arg %d", args[i],i);
-
-//         token = strtok(NULL, " ");
-//         if(strlen(token)==0)
-//             i--;
-//         i++;
-//     }
-//     int x= 0;
-//     printf("\nx = %d", x);
-
-//     // x = commandsHandler(args);
-//     printf("\nx = %d", x);
-// }
-
 void execArgs(char **args)
 {
 
     if (strstr(args[0], "cd"))
         changeDir(args[1]);
+
     else
     {
         pid_t pid = fork();
@@ -163,24 +136,18 @@ void execArgs(char **args)
         }
         else if (pid > 0)
         {
-            // printf("\nparent wait");
             // waiting for child to terminate
             wait(NULL);
             return;
         }
         else if (pid == 0)
         {
-            // printf("\nin child");
-
-            // if (strcmp(args[0], "cd"))
-            //     changeDir(args[1]);
 
             for (int i = 0; i < 6; i++)
             {
                 if (strcmp(args[0], builtin[i].name) == 0)
                 {
                     builtin[i].func(args[1]);
-                    // printf("\nin child run builtin");
                     exit(0);
                     return;
                 }
@@ -195,6 +162,11 @@ void execArgs(char **args)
         }
     }
 }
+
+void exitFunc(char *args){
+
+}
+
 
 void helpMenu()
 {
@@ -259,15 +231,9 @@ void printFirstPart(char *fileName)
 
     fclose(file);
 }
+
 void maxFrequent(char *fileName)
 {
-
-    // char *bashCmd="bash max.sh ";
-    // // char *file;
-    // // strcpy(file,fileName);
-    // strcat(bashCmd, fileName);
-    // system(bashCmd);
-
     int count, maxCount = 0, i = 0, j, k;
     char words[1000][1000], word[100];
     char line[100];
@@ -338,6 +304,7 @@ void uncommented(char *fileName)
     char line[1000];
     FILE *file = readFile(fileName);
     char *token;
+    char blanks[50][1000];
     while (fgets(line, 1000, file) != NULL)
     {
         char blank[1000];
@@ -346,13 +313,15 @@ void uncommented(char *fileName)
         {
             if (line[i] == '#')
                 break;
+
             else
             {
                 blank[j] = line[i];
                 j++;
             }
         }
-        printf("%s\n", blank);
+
+        printf("%s", blank);
     }
     fclose(file);
 }
@@ -389,7 +358,6 @@ void firstTenLine(char *fileName)
 void sigintHandler(int sig_num)
 {
     signal(SIGINT, sigintHandler);
-    // printf("\n Cannot be terminated using Ctrl+C \n");
     fflush(stdout);
 }
 
@@ -402,9 +370,7 @@ void loop_run(char *inpstr, char **args)
         printdir();
         if (get_input(inpstr))
             continue;
-        // get_input(inpstr);
         parseSpace(inpstr, args);
-        // commandsHandler(args);   
         execArgs(args);
     }
 }
